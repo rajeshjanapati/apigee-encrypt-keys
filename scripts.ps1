@@ -29,8 +29,8 @@ $appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organiz
 $appdetailjson = $appdetailget | ConvertTo-Json
 Write-Host $appdetailjson
 
-Write-Host $appdetailjson.consumerKey
-Write-Host $appdetailjson.consumerSecret
+Write-Host $appdetailget.credentials.consumerKey
+Write-Host $appdetailjson.credentials.consumerSecret
 
 # # Define the JSON data
 # $jsonData = '{
