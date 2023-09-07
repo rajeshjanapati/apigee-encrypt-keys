@@ -39,7 +39,7 @@ function Encode-PropertyValue {
     )
     $originalValue = $object.$property
     $base64Value = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($originalValue))
-    $object | Add-Member -MemberType NoteProperty -Name $property -Value $base64Value
+    $object | Add-Member -MemberType NoteProperty -Name $property -Value $base64Value -Force
 }
 
 # Encode and replace the fields in the JSON data with Base64
