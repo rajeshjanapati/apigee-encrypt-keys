@@ -47,7 +47,7 @@ Write-Host "ConsumerKey: $jsonObject.credentials.consumerkey"
 Write-Host "SecretKey: $jsonObject.credentials.consumersecretkey"
 
 # # Define an array of field names to encrypt
-$fieldsToEncrypt = @("$jsonObject.credentials.consumerkey", "$jsonObject.credentials.consumersecretkey")
+$fieldsToEncrypt = @("$appdetailget.credentials.consumerKey", "$appdetailget.credentials.consumerSecret")
 
 # # Create an AES encryption object
 $aes = New-Object System.Security.Cryptography.AesCryptoServiceProvider
@@ -59,21 +59,20 @@ $encryptor = $aes.CreateEncryptor()
 
 # Loop through the JSON object and encrypt specified fields
 foreach ($field in $fieldsToEncrypt) {
-    if ($jsonObject.$field) {
-        $valueToEncrypt = $jsonObject.$field
+    Write-Host "Entered into FOREACH..."
+    $valueToEncrypt = $field
 
-        # Convert the string to bytes
-        $bytesToEncrypt = [System.Text.Encoding]::UTF8.GetBytes($valueToEncrypt)
+    # Convert the string to bytes
+    $bytesToEncrypt = [System.Text.Encoding]::UTF8.GetBytes($valueToEncrypt)
 
-        # Encrypt the bytes
-        $encryptedBytes = $encryptor.TransformFinalBlock($bytesToEncrypt, 0, $bytesToEncrypt.Length)
+    # Encrypt the bytes
+    $encryptedBytes = $encryptor.TransformFinalBlock($bytesToEncrypt, 0, $bytesToEncrypt.Length)
 
-        # Convert the encrypted bytes to Base64 or any other format as needed
-        $encryptedValue = [System.Convert]::ToBase64String($encryptedBytes)
+    # Convert the encrypted bytes to Base64 or any other format as needed
+    $encryptedValue = [System.Convert]::ToBase64String($encryptedBytes)
 
-        # Replace the original value with the encrypted value
-        $jsonObject.$field = $encryptedValue
-    }
+    # Replace the original value with the encrypted value
+    $jsonObject.$field = $encryptedValue
 }
 
 # Convert the modified JSON object back to a JSON string
