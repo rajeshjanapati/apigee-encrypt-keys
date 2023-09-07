@@ -53,7 +53,12 @@ git clone https://github.com/rajeshjanapati/apigee-encrypt-keys.git
 
 # Save the modified JSON data to a JSON file
 Write-host "Encrypted data: ($appdetailget | ConvertTo-Json)"
-$appdetailget | ConvertTo-Json | Set-Content -Path "jsonfiles/base64_encoded_app.json"
+$appdetailget | ConvertTo-Json | Set-Content -Path "apigee-encrypt-keys/jsonfiles/base64_encoded_app.json"
+
+git add apigee-encrypt-keys/jsonfiles/base64_encoded_app.json
+git commit -m "Update encrypted JSON data"
+git push
+
 
 
 # # # Create a crypto stream for encryption
