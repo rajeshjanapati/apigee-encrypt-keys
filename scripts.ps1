@@ -28,13 +28,8 @@ $rng.GetBytes($iv)
 # Make the API call to get the data
 $appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/developers/veenakumari226@gmail.com/apps/app" -Method 'GET' -Headers $headers
 
-# Create an AES encryption object
-$aes = New-Object System.Security.Cryptography.AesCryptoServiceProvider
-$aes.Key = $encryptionKey
-$aes.IV = $iv
-
-# Define an array of field names to encrypt
-$fieldsToEncrypt = @("credentials.consumerKey", "credentials.consumerSecret")
+# Define an array of field names to encode in Base64
+$fieldsToEncode = @("credentials.consumerKey", "credentials.consumerSecret")
 
 # Custom function to get property value
 function Get-PropertyValue {
@@ -55,15 +50,15 @@ function Set-PropertyValue {
     $object.psobject.Properties[$property].Value = $value
 }
 
-# Encrypt and replace the fields in the JSON data
-foreach ($field in $fieldsToEncrypt) {
+# Encode and replace the fields in the JSON data with Base64
+foreach ($field in $fieldsToEncode) {
     $originalValue = Get-PropertyValue -object $appdetailget -property $field
-    $encryptedValue = $originalValue | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString -Key $encryptionKey -IV $iv
-    Set-PropertyValue -object $appdetailget -property $field -value $encryptedValue
+    $base64Value = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($originalValue))
+    Set-PropertyValue -object $appdetailget -property $field -value $base64Value
 }
 
 # Save the modified JSON data to a JSON file
-$appdetailget | ConvertTo-Json | Set-Content -Path "encrypted_app.json"
+$appdetailget | ConvertTo-Json | Set-Content -Path "base64_encoded_app.json"
 
 # # # Create a crypto stream for encryption
 # $encryptor = $aes.CreateEncryptor()
