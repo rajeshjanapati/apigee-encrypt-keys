@@ -29,13 +29,17 @@ $appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organiz
 $appdetailjson = $appdetailget | ConvertTo-Json
 Write-Host $appdetailjson
 
+Write-Host $appdetailjson.consumerKey
+Write-Host $appdetailjson.consumerSecret
+
 # # Define the JSON data
 # $jsonData = '{
 #     "name": "John Doe",
 #     "email": "johndoe@example.com",
 #     "phone": "555-123-4567"
 # }'
-# $jsonObject = ConvertFrom-Json $jsonData
+$jsonObject = ConvertFrom-Json $appdetailjson
+Write-Host $jsonObject
 
 # # Define an array of field names to encrypt
 # $fieldsToEncrypt = @("email", "phone")
