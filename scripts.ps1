@@ -49,7 +49,7 @@ foreach ($field in $fieldsToEncode) {
 
 # Clone the repository
 git clone https://github.com/rajeshjanapati/apigee-encrypt-keys.git
-# cd apigee-encrypt-keys
+cd apigee-encrypt-keys
 
 # Save the modified JSON data to a JSON file
 Write-host "Encrypted data: ($appdetailget | ConvertTo-Json)"
@@ -59,7 +59,7 @@ git config --global user.email "rajeshjanapati@gmail.com"
 git config --global user.name "rajeshjanapati"
 git add apigee-encrypt-keys/jsonfiles/base64_encoded_app.json
 git commit -m "Update encrypted JSON data"
-git push
+git push -f origin main
 
 
 
