@@ -32,8 +32,8 @@ Write-Host $appdetailjson
 Write-Host $appdetailget.credentials.consumerKey
 Write-Host $appdetailget.credentials.consumerSecret
 
-$consumerkey = $appdetailget.credentials.consumerKey
-$consumersecretkey = $appdetailget.credentials.consumerSecret
+# $consumerkey = $appdetailget.credentials.consumerKey
+# $consumersecretkey = $appdetailget.credentials.consumerSecret
 
 # # Define the JSON data
 # $jsonData = '{
@@ -43,9 +43,11 @@ $consumersecretkey = $appdetailget.credentials.consumerSecret
 # }'
 $jsonObject = ConvertFrom-Json $appdetailjson
 Write-Host $jsonObject
+Write-Host "ConsumerKey: $jsonObject.credentials.consumerkey"
+Write-Host "SecretKey: $jsonObject.credentials.consumersecretkey"
 
 # # Define an array of field names to encrypt
-$fieldsToEncrypt = @("$consumerkey", "$consumersecretkey")
+$fieldsToEncrypt = @("$jsonObject.credentials.consumerkey", "$jsonObject.credentials.consumersecretkey")
 
 # # Create an AES encryption object
 $aes = New-Object System.Security.Cryptography.AesCryptoServiceProvider
