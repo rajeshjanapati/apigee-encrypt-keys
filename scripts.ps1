@@ -52,6 +52,7 @@ git clone https://github.com/rajeshjanapati/apigee-encrypt-keys.git
 # cd apigee-encrypt-keys
 
 # Save the modified JSON data to a JSON file
+Write-host "Encrypted data: ($appdetailget | ConvertTo-Json)"
 $appdetailget | ConvertTo-Json | Set-Content -Path "jsonfiles/base64_encoded_app.json"
 
 
