@@ -47,14 +47,15 @@ foreach ($field in $fieldsToEncode) {
     Encode-PropertyValue -object $appdetailget.credentials[0] -property $field
 }
 
-# Clone the repository
-git clone https://github.com/rajeshjanapati/apigee-encrypt-keys.git
-cd apigee-encrypt-keys
+
 
 # Save the modified JSON data to a JSON file
 Write-host "Encrypted data: ($appdetailget | ConvertTo-Json)"
 $appdetailget | ConvertTo-Json | Set-Content -Path "apigee-encrypt-keys/jsonfiles/base64_encoded_app.json"
 
+# Clone the repository
+git clone https://github.com/rajeshjanapati/apigee-encrypt-keys.git
+# cd apigee-encrypt-keys
 git config --global user.email "rajeshjanapati@gmail.com"
 git config --global user.name "rajeshjanapati"
 git add apigee-encrypt-keys/jsonfiles/base64_encoded_app.json
