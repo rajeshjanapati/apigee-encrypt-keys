@@ -29,7 +29,7 @@ $rng.GetBytes($iv)
 $appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/developers/veenakumari226@gmail.com/apps/app" -Method 'GET' -Headers $headers
 
 # Define an array of field names to encode in Base64
-$fieldsToEncode = @("credentials.consumerKey", "credentials.consumerSecret")
+$fieldsToEncode = @("credentials[0].consumerKey", "credentials[0].consumerSecret")
 
 # Custom function to encode and replace property value with Base64
 function Encode-PropertyValue {
