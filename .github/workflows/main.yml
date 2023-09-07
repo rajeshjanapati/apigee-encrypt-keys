@@ -100,13 +100,7 @@ jobs:
             git config --global user.email "pavan.sirasanambedu@gmail.com"
             git config --global user.name "pavan2esi"
             git add .
-
-      - name: Commit files to Git
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git commit -a -m "Apigee Artifacts Export Updates"
-            exit 0
-          fi
+            git commit -m "add file"
 
       - name: Debug Git Status
         run: |
