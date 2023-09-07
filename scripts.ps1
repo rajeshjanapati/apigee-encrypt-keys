@@ -36,11 +36,30 @@ $aes.IV = $iv
 # Define an array of field names to encrypt
 $fieldsToEncrypt = @("credentials.consumerKey", "credentials.consumerSecret")
 
+# Custom function to get property value
+function Get-PropertyValue {
+    param (
+        [Object]$object,
+        [String]$property
+    )
+    $object.psobject.Properties[$property].Value
+}
+
+# Custom function to set property value
+function Set-PropertyValue {
+    param (
+        [Object]$object,
+        [String]$property,
+        [Object]$value
+    )
+    $object.psobject.Properties[$property].Value = $value
+}
+
 # Encrypt and replace the fields in the JSON data
 foreach ($field in $fieldsToEncrypt) {
-    $originalValue = $appdetailget | Get-PropertyValue $field
+    $originalValue = Get-PropertyValue -object $appdetailget -property $field
     $encryptedValue = $originalValue | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString -Key $encryptionKey -IV $iv
-    $appdetailget = $appdetailget | Set-PropertyValue $field $encryptedValue
+    Set-PropertyValue -object $appdetailget -property $field -value $encryptedValue
 }
 
 # Save the modified JSON data to a JSON file
