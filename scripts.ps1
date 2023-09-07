@@ -54,13 +54,13 @@ Write-host "Encrypted data: ($appdetailget | ConvertTo-Json)"
 $appdetailget | ConvertTo-Json | Set-Content -Path "jsonfiles/base64_encoded_app.json"
 
 # Clone the repository
-git clone https://github.com/rajeshjanapati/apigee-encrypt-keys.git
+# git clone https://github.com/rajeshjanapati/apigee-encrypt-keys.git
 # cd apigee-encrypt-keys
-git config --global user.email "rajeshjanapati@gmail.com"
-git config --global user.name "rajeshjanapati"
-git add apigee-encrypt-keys/jsonfiles/base64_encoded_app.json
-git commit -m "Update encrypted JSON data"
-git push -f origin main
+# git config --global user.email "rajeshjanapati@gmail.com"
+# git config --global user.name "rajeshjanapati"
+# git add apigee-encrypt-keys/jsonfiles/base64_encoded_app.json
+# git commit -m "Update encrypted JSON data"
+# git push -f origin main
 
 
 
