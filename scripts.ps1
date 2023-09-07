@@ -25,7 +25,7 @@ $iv = New-Object byte[] 16  # 128 bits
 $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
 $rng.GetBytes($iv)
 
-$appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/environments/eval/keyvaluemaps" -Method 'GET' -Headers $headers
+$appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/developers/veenakumari226@gmail.com/apps/app" -Method 'GET' -Headers $headers
 $appdetailjson = $appdetailget | ConvertTo-Json
 Write-Host $appdetailjson
 
