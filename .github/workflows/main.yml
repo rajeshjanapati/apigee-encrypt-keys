@@ -101,16 +101,6 @@ jobs:
             git config --global user.name "pavan2esi"
             git add .
 
-      - name: Check for delta changes - Git
-        id: check_git_changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Pushing latest code to Git"
-          else
-            echo "Local branch is up to date with Remote branch."
-            exit 0
-          fi
-
       - name: Commit files to Git
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
