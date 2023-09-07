@@ -31,30 +31,20 @@ $appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organiz
 # Define an array of field names to encode in Base64
 $fieldsToEncode = @("credentials.consumerKey", "credentials.consumerSecret")
 
-# Custom function to get property value
-function Get-PropertyValue {
+# Custom function to encode and replace property value with Base64
+function Encode-PropertyValue {
     param (
         [Object]$object,
         [String]$property
     )
-    $object.psobject.Properties[$property].Value
-}
-
-# Custom function to set property value
-function Set-PropertyValue {
-    param (
-        [Object]$object,
-        [String]$property,
-        [Object]$value
-    )
-    $object.psobject.Properties[$property].Value = $value
+    $originalValue = $object | Select-Object -ExpandProperty $property
+    $base64Value = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($originalValue))
+    $object | Add-Member -MemberType NoteProperty -Name $property -Value $base64Value
 }
 
 # Encode and replace the fields in the JSON data with Base64
 foreach ($field in $fieldsToEncode) {
-    $originalValue = Get-PropertyValue -object $appdetailget -property $field
-    $base64Value = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($originalValue))
-    Set-PropertyValue -object $appdetailget -property $field -value $base64Value
+    Encode-PropertyValue -object $appdetailget -property $field
 }
 
 # Save the modified JSON data to a JSON file
