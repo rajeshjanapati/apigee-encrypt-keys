@@ -1,17 +1,5 @@
-# write-output Apigee Artifacts
 $token = $env:TOKEN
-$org = $env:ORG
-$baseURL = "https://apigee.googleapis.com/v1/organizations/"
 $headers = @{Authorization = "Bearer $token"}
-
-# # Set your GitHub repository information
-# $repositoryOwner = "rajeshjanapati@gmail.com"
-# $repositoryName = "apigee-encrypt-keys"
-# $branchName = "main"  # Change this to the branch you want to access
-# $githubToken = "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"
-
-# # Import the cryptographic module
-# Import-Module Microsoft.PowerShell.Security
 
 $encryptionKey = New-Object byte[] 32  # 256 bits
 $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
@@ -44,5 +32,4 @@ foreach ($field in $fieldsToEncode) {
 }
 
 # Save the modified JSON data to a JSON file
-Write-host "Encrypted data: ($appdetailget | ConvertTo-Json)"
 $appdetailget | ConvertTo-Json | Set-Content -Path "jsonfiles/base64_encoded_app.json"
