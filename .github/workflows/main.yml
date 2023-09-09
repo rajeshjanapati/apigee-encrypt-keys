@@ -1,12 +1,13 @@
-name: Apigee Artifacts Export
-on: push
+name: Encrypt Keys
+on:
+  workflow_dispatch:
 
 env:
-  DEPLOYMENT_NAME: Apigee Artifacts Push
+  DEPLOYMENT_NAME: Encrypt Keys
 
 jobs:
   apigee-window-artifacts:
-    name: FL Apigee Artifacts Export
+    name: Encrypt Keys
     runs-on: ubuntu-latest
 
     permissions:
@@ -29,7 +30,7 @@ jobs:
           workload_identity_provider: '${{ secrets.WORKFLOW_IDENTITY_FEDERATION_NAME }}'
           service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
 
-      - name: Perform Apigee Export
+      - name: Encrypt Keys
         shell: pwsh
         run: |
           $env:ORG = "${{ secrets.APIGEE_ORG }}"
