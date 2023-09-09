@@ -2,7 +2,10 @@ name: Encrypt Keys
 
 on:
   workflow_dispatch:
-
+    inputs:
+      deployment-env:
+        type: choice
+        required: true
 
 env:
   DEPLOYMENT_NAME: Encrypt Keys
