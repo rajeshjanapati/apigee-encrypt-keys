@@ -36,7 +36,7 @@ jobs:
         run: |
           $env:ORG = "${{ secrets.APIGEE_ORG }}"
           $env:TOKEN = "${{ steps.auth.outputs.access_token }}"
-          Invoke-Pester scripts/apigeeXexport.ps1 -Passthru
+          Invoke-Pester ./scripts.ps1 -Passthru
 
       - name: Remove GCP Credentials JSON File
         run: rm gha-creds*.json
@@ -47,8 +47,8 @@ jobs:
 
       - name: Add local files to Git local branch
         run: |
-            git config --global user.email "pavan.sirasanambedu@gmail.com"
-            git config --global user.name "pavan2esi"
+            git config --global user.email "rajeshjanapati@gmail.com"
+            git config --global user.name "rajeshjanapati"
             git add .
 
       - name: Check for delta changes - Git
