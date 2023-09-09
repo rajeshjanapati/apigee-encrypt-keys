@@ -1,93 +1,48 @@
-name: Encrypt keys to GitHub PowerShell
+name: Encrypt Keys
 
-on: push
-
- 
+on:
+  workflow_dispatch:
+    inputs:
+      deployment-env:
+        type: choice
+        required: true
 
 env:
-
-  DEPLOYMENT_NAME: Encrypt keys to GitHub # TODO: update to deployment name
-
- 
-
-  # Default Target Apigee Organization et environment (can be also be dynamically defined in [Set Variables *] steps)
-
-  APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
-
-  APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
-
-  GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
-  WORKFLOW_IDENTITY_FEDERATION_NAME: ${{ secrets.WORKFLOW_IDENTITY_FEDERATION_NAME }}
-
-  APIGEE_BASE_URL: "https://apigee.googleapis.com/v1/organizations/"
-
- 
+  DEPLOYMENT_NAME: Encrypt Keys
 
 jobs:
-
   apigee-window-artifacts:
-
-    name: Artifacts Windows Export
-
-    runs-on: windows-latest
-
- 
+    name: Encrypt Keys
+    runs-on: ubuntu-latest
 
     permissions:
-
       contents: 'read'
-
       id-token: 'write'
 
- 
-
     steps:
-
-      - name: Check out repository code
-
+      - name: Check out Git repository code
         uses: actions/checkout@v3
-
         with:
-
-          persist-credentials: false
-
           fetch-depth: 0
-
- 
+          token: "${{ secrets.TOKEN_GIT }}"
 
       # Configure Workload Identity Federation and generate an access token.
-
       - id: 'auth'
-
         name: 'Authenticate to Google Apigee Cloud'
-
         uses: 'google-github-actions/auth@v1'
-
         with:
-
           token_format: 'access_token'
-
-          workload_identity_provider: 'projects/127369686749/locations/global/workloadIdentityPools/github-test/providers/github-test'
-
-          service_account: 'workload-identity-federation@esi-apigee-x-394004.iam.gserviceaccount.com'
-
+          workload_identity_provider: '${{ secrets.WORKFLOW_IDENTITY_FEDERATION_NAME }}'
+          service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
 
       - name: Encrypt Keys
-
         shell: pwsh
-
         run: |
-
           $env:ORG = "${{ secrets.APIGEE_ORG }}"
-
           $env:TOKEN = "${{ steps.auth.outputs.access_token }}"
-
-          Invoke-Pester ./scripts.ps1 -Passthru
-          
+          Invoke-Pester scripts/apigeeXexport.ps1 -Passthru
 
       - name: Remove GCP Credentials JSON File
-
         run: rm gha-creds*.json
 
       - name: Debug Git Config
@@ -96,17 +51,31 @@ jobs:
 
       - name: Add local files to Git local branch
         run: |
-            git config --global user.email "rajeshjanapati@gmail.com"
-            git config --global user.name "rajeshjanapati"
+            git config --global user.email "pavan.sirasanambedu@gmail.com"
+            git config --global user.name "pavan2esi"
             git add .
-            git commit -m "add file"
+
+      - name: Check for delta changes - Git
+        id: check_git_changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Local branch is not up to date with remote_branch. Pushing latest code to Git"
+          else
+            echo "Local branch is up to date with Remote branch."
+            exit 0
+          fi
+
+      - name: Commit files to Git
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git commit -a -m "Apigee Artifacts Export Updates"
+            exit 0
+          fi
 
       - name: Debug Git Status
         run: |
           git status
 
       - name: Push changes to Git
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GIT_TOKEN }}
-          branch: encrypt/keys
+        run: |
+          git push origin encrypt/keys
