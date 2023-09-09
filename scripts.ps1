@@ -22,7 +22,7 @@ $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
 $rng.GetBytes($iv)
 
 # Make the API call to get the data
-$appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/developers/veenakumari226@gmail.com/apps/app" -Method 'GET' -Headers $headers
+$appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/developers/testexample1@gmail.com/apps/app" -Method 'GET' -Headers $headers
 
 # Define an array of field names to encode in Base64
 $fieldsToEncode = @("consumerKey", "consumerSecret")
