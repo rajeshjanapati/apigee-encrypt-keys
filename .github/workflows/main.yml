@@ -1,6 +1,5 @@
 name: Apigee Artifacts Export
-on:
-  workflow_dispatch:
+on: push
 
 env:
   DEPLOYMENT_NAME: Apigee Artifacts Push
