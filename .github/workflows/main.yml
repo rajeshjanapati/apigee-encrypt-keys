@@ -1,6 +1,8 @@
 name: Encrypt Keys
+
 on:
   workflow_dispatch:
+
 
 env:
   DEPLOYMENT_NAME: Encrypt Keys
