@@ -94,12 +94,11 @@ Write-Host $encryptedJsonData
 # $encryptedJsonData | Set-Content -Path $outputFilePath
 
 
-
-# Convert the modified JSON data back to a PowerShell object
-$encryptedJsonData = $encryptedJsonData | ConvertFrom-Json
-
 # Specify the fields you want to decrypt
 $fieldsToDecrypt = @("consumerKey", "consumerSecret")
+
+# Decryption key (use the same key you used for encryption)
+$keyHex = $env:key
 
 # Create a new AES object with the specified key and AES mode
 $AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider
@@ -109,10 +108,9 @@ $AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
 
 # Loop through the specified fields and decrypt their values
 foreach ($field in $fieldsToDecrypt) {
-    $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field
-
     # Check if the field contains a valid Base64 string
-    if ($encryptedValueBase64 -ne "System.Collections.Hashtable") {
+    if ($encryptedJsonData.credentials[0].$field -ne "System.Collections.Hashtable") {
+        $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field.EncryptedValue
         $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
 
         # Convert IV and encrypted value to bytes
@@ -132,8 +130,4 @@ foreach ($field in $fieldsToDecrypt) {
 }
 
 # Display the JSON object with decrypted values
-$decryptedJsonData = $encryptedJsonData | ConvertTo-Json
-
-# Print the JSON data with decrypted values
-Write-Host $decryptedJsonData
-
+Write-Host $encryptedJsonData
