@@ -74,7 +74,7 @@ foreach ($field in $fieldsToEncrypt) {
         # Store the encrypted value back in the JSON data
         $appdetailget.credentials[0].$field = @{
             "EncryptedValue" = $encryptedBase64
-            "IV" = $IVBase64
+            # "IV" = $IVBase64
         }
     }
 }
