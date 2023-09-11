@@ -130,8 +130,6 @@ foreach ($field in $fieldsToDecrypt) {
         # Update the JSON object with the decrypted value
         $encryptedJsonData.credentials[0].$field = $decryptedText
 
-        # Update the credential object with the decrypted value
-        # $credential.$field = $decryptedText
     }
 }
 
