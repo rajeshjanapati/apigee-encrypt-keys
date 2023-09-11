@@ -93,6 +93,9 @@ Write-Host $encryptedJsonData
 # To save the modified JSON data to a file, uncomment and customize the following line
 # $encryptedJsonData | Set-Content -Path $outputFilePath
 
+# Convert the modified JSON data back to a PowerShell object
+$encryptedJsonData = $encryptedJsonData | ConvertFrom-Json
+
 
 # Specify the fields you want to decrypt
 $fieldsToDecrypt = @("consumerKey", "consumerSecret")
