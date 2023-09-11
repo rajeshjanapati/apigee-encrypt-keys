@@ -94,7 +94,6 @@ $AES.KeySize = 256  # Set the key size to 256 bits for AES-256
 $AES.Key = [System.Text.Encoding]::UTF8.GetBytes($keyHex.PadRight(32))
 $AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
 
-# Loop through the specified fields and decrypt their values
 foreach ($field in $fieldsToEncrypt) {
     $encryptedData = $appdetailget.credentials[0].$field
 
@@ -102,6 +101,9 @@ foreach ($field in $fieldsToEncrypt) {
     $parts = $encryptedData -split ","
     $IVBase64 = $parts[0]
     $encryptedBase64 = $parts[1]
+
+    Write-Host "IVBase64: $IVBase64"
+    Write-Host "encryptedBase64: $encryptedBase64"
 
     # Convert IV and encrypted value from Base64
     $IV = [System.Convert]::FromBase64String($IVBase64)
@@ -117,6 +119,7 @@ foreach ($field in $fieldsToEncrypt) {
     # Store the decrypted value back in the JSON data
     $appdetailget.credentials[0].$field = $decryptedText
 }
+
 
 # Convert the modified JSON data back to JSON format
 $decryptedJsonData = $appdetailget | ConvertTo-Json
