@@ -94,26 +94,30 @@ $keyHex = $env:key
 # Loop through the specified fields and decrypt their values
 foreach ($field in $fieldsToDecrypt) {
     # Check if 'credentials' and the specific field exist
-    if ($encryptedJsonData.credentials -ne $null -and $encryptedJsonData.credentials[0].$field -ne $null) {
-        $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field.EncryptedValue
-        $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
+    if ($encryptedJsonData.credentials -ne $null) {
+        $fieldValue = $encryptedJsonData.credentials[0].$field
+        if ($fieldValue -ne $null) {
+            $encryptedValueBase64 = $fieldValue.EncryptedValue
+            $IVBase64 = $fieldValue.IV
 
-        # Convert IV and encrypted value to bytes
-        $IV = [System.Convert]::FromBase64String($IVBase64)
-        $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
+            # Convert IV and encrypted value to bytes
+            $IV = [System.Convert]::FromBase64String($IVBase64)
+            $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
 
-        # Create a decryptor
-        $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
+            # Create a decryptor
+            $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
 
-        # Decrypt the data
-        $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
-        $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
+            # Decrypt the data
+            $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
+            $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
 
-        # Update the JSON object with the decrypted value
-        $encryptedJsonData.credentials[0].$field = $decryptedText
-    }
-    else {
-        Write-Host "Field '$field' not found or is null."
+            # Update the JSON object with the decrypted value
+            $encryptedJsonData.credentials[0].$field = $decryptedText
+        } else {
+            Write-Host "Field '$field' value is null."
+        }
+    } else {
+        Write-Host "Field '$field' not found in 'credentials'."
     }
 }
 
