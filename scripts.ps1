@@ -1,5 +1,6 @@
 $token = $env:TOKEN
 $headers = @{Authorization = "Bearer $token"}
+$keyHex = $env:key
 
 # Input string
 $inputString = $keyHex
