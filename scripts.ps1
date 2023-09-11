@@ -1,13 +1,26 @@
 $token = $env:TOKEN
 $headers = @{Authorization = "Bearer $token"}
 
-$encryptionKey = New-Object byte[] 32  # 256 bits
-$rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
-$rng.GetBytes($encryptionKey)
+# Input string
+$inputString = $keyHex
 
-$iv = New-Object byte[] 16  # 128 bits
+$keyLength = 32  # 32 bytes for AES-256
+
+# Convert the string to bytes using UTF-8 encoding
+$stringBytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
+
+# Create a 32-byte key directly from the input string (no need for SHA-256)
+$keyBytes = $stringBytes + @(0) * (32 - $stringBytes.Length)
+
+
+
+# $encryptionKey = New-Object byte[] 32  # 256 bits
 $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
-$rng.GetBytes($iv)
+$rng.GetBytes($keyBytes)
+
+# $iv = New-Object byte[] 16  # 128 bits
+# $rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
+# $rng.GetBytes($iv)
 
 # Make the API call to get the data
 $appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/developers/testexample1@gmail.com/apps/app" -Method 'GET' -Headers $headers
