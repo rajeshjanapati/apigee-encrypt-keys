@@ -136,4 +136,6 @@ foreach ($field in $fieldsToDecrypt) {
 }
 
 # Display the JSON object with decrypted values
-$encryptedJsonData | ConvertTo-Json -Depth 10
+$decrypteddata = $encryptedJsonData | ConvertTo-Json -Depth 10
+
+Write-Host $decrypteddata
