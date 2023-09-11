@@ -85,8 +85,11 @@ Write-Host $encryptedJsonData
 # To save the modified JSON data to a file, uncomment and customize the following line
 # $encryptedJsonData | Set-Content -Path $outputFilePath
 
-# Decryption key (should be the same as the encryption key)
-# $keyHex = $env:key  # Replace with your encryption key
+# Specify the fields you want to decrypt
+$fieldsToDecrypt = @("consumerKey", "consumerSecret")
+
+# Decryption key (use the same key you used for encryption)
+$keyHex = $env:key
 
 # Create a new AES object with the specified key and AES mode
 $AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider
@@ -94,36 +97,26 @@ $AES.KeySize = 256  # Set the key size to 256 bits for AES-256
 $AES.Key = [System.Text.Encoding]::UTF8.GetBytes($keyHex.PadRight(32))
 $AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
 
-foreach ($field in $fieldsToEncrypt) {
-    $encryptedData = $appdetailget.credentials[0].$field
+# Loop through the specified fields and decrypt their values
+foreach ($field in $fieldsToDecrypt) {
+    $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field.EncryptedValue
+    $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
 
-    # Split the stored data into IV and encrypted value
-    $parts = $encryptedData -split ","
-    $IVBase64 = $parts[0]
-    $encryptedBase64 = $parts[1]
-
-    Write-Host "IVBase64: $IVBase64"
-    Write-Host "encryptedBase64: $encryptedBase64"
-
-    # Convert IV and encrypted value from Base64
+    # Convert IV and encrypted value to bytes
     $IV = [System.Convert]::FromBase64String($IVBase64)
-    $encryptedBytes = [System.Convert]::FromBase64String($encryptedBase64)
+    $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
 
-    # Create a decryptor with the same IV and key
+    # Create a decryptor
     $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
 
     # Decrypt the data
     $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
     $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
 
-    # Store the decrypted value back in the JSON data
-    $appdetailget.credentials[0].$field = $decryptedText
+    # Update the JSON object with the decrypted value
+    $encryptedJsonData.credentials[0].$field = $decryptedText
 }
 
-
-# Convert the modified JSON data back to JSON format
-$decryptedJsonData = $appdetailget | ConvertTo-Json
-
-# Display the modified JSON data
-Write-Host $decryptedJsonData
+# Display the JSON object with decrypted values
+Write-Host $encryptedJsonData
 
