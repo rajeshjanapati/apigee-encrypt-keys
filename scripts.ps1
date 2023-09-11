@@ -87,45 +87,45 @@ Write-Host $encryptedJsonData
 
 
 
-# Convert the modified JSON data back to a PowerShell object
-$encryptedJsonData = $encryptedJsonData | ConvertFrom-Json
+# # Convert the modified JSON data back to a PowerShell object
+# $encryptedJsonData = $encryptedJsonData | ConvertFrom-Json
 
-# Specify the fields you want to decrypt
-$fieldsToDecrypt = @("consumerKey", "consumerSecret")
+# # Specify the fields you want to decrypt
+# $fieldsToDecrypt = @("consumerKey", "consumerSecret")
 
-# Create a new AES object with the specified key and AES mode
-$AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider
-$AES.KeySize = 256  # Set the key size to 256 bits for AES-256
-$AES.Key = [System.Text.Encoding]::UTF8.GetBytes($keyHex.PadRight(32))
-$AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
+# # Create a new AES object with the specified key and AES mode
+# $AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider
+# $AES.KeySize = 256  # Set the key size to 256 bits for AES-256
+# $AES.Key = [System.Text.Encoding]::UTF8.GetBytes($keyHex.PadRight(32))
+# $AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
 
-# Loop through the specified fields and decrypt their values
-foreach ($field in $fieldsToDecrypt) {
-    $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field
+# # Loop through the specified fields and decrypt their values
+# foreach ($field in $fieldsToDecrypt) {
+#     $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field
 
-    # Check if the field contains a valid Base64 string
-    if ($encryptedValueBase64 -ne "System.Collections.Hashtable") {
-        $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
+#     # Check if the field contains a valid Base64 string
+#     if ($encryptedValueBase64 -ne "System.Collections.Hashtable") {
+#         $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
 
-        # Convert IV and encrypted value to bytes
-        $IV = [System.Convert]::FromBase64String($IVBase64)
-        $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
+#         # Convert IV and encrypted value to bytes
+#         $IV = [System.Convert]::FromBase64String($IVBase64)
+#         $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
 
-        # Create a decryptor
-        $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
+#         # Create a decryptor
+#         $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
 
-        # Decrypt the data
-        $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
-        $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
+#         # Decrypt the data
+#         $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
+#         $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
 
-        # Update the JSON object with the decrypted value
-        $encryptedJsonData.credentials[0].$field = $decryptedText
-    }
-}
+#         # Update the JSON object with the decrypted value
+#         $encryptedJsonData.credentials[0].$field = $decryptedText
+#     }
+# }
 
-# Display the JSON object with decrypted values
-$decryptedJsonData = $encryptedJsonData | ConvertTo-Json
+# # Display the JSON object with decrypted values
+# $decryptedJsonData = $encryptedJsonData | ConvertTo-Json
 
-# Print the JSON data with decrypted values
-Write-Host $decryptedJsonData
+# # Print the JSON data with decrypted values
+# Write-Host $decryptedJsonData
 
