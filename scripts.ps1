@@ -38,14 +38,11 @@ $headers = @{Authorization = "Bearer $token"}
 
 
 
-# # Make the API call to get the data
+# Make the API call to get the data
 $appdetailget = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/developers/testexample1@gmail.com/apps/app" -Method 'GET' -Headers $headers
 
 # Specify the fields you want to encrypt
 $fieldsToEncrypt = @("consumerKey", "consumerSecret")
-
-# Read the JSON data from the input file
-$jsonData = Get-Content -Path $appdetailget | ConvertFrom-Json
 
 # Encryption key
 $keyHex = $env:key  # Replace with your encryption key
@@ -58,28 +55,32 @@ $AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
 
 # Loop through the specified fields and encrypt their values
 foreach ($field in $fieldsToEncrypt) {
-    # $plaintext = $jsonData.$field
-    $plaintext = $appdetailget.credentials[0]
+    $plaintext = $appdetailget.credentials[0].$field
 
     # Convert plaintext to bytes (UTF-8 encoding)
     $plaintextBytes = [System.Text.Encoding]::UTF8.GetBytes($plaintext)
 
+    # Generate a random initialization vector (IV)
+    $AES.GenerateIV()
+    $IVBase64 = [System.Convert]::ToBase64String($AES.IV)
+
     # Encrypt the data
     $encryptor = $AES.CreateEncryptor()
     $encryptedBytes = $encryptor.TransformFinalBlock($plaintextBytes, 0, $plaintextBytes.Length)
-
-    # Convert the IV and encrypted bytes to Base64 strings for storage/transmission
-    $IVBase64 = [System.Convert]::ToBase64String($AES.IV)
     $encryptedBase64 = [System.Convert]::ToBase64String($encryptedBytes)
 
     # Store the encrypted value back in the JSON data
-    $jsonData.$field = @{
+    $appdetailget.credentials[0].$field = @{
         "EncryptedValue" = $encryptedBase64
         "IV" = $IVBase64
     }
 }
 
-Write-Host $jsonData | ConvertTo-Json
+# Convert the modified JSON data back to JSON format
+$encryptedJsonData = $appdetailget | ConvertTo-Json
 
-# Convert the modified JSON data back to JSON format and write it to the output file
-# $jsonData | ConvertTo-Json | Set-Content -Path $outputFilePath
+# Display the modified JSON data
+Write-Host $encryptedJsonData
+
+# To save the modified JSON data to a file, uncomment and customize the following line
+# $encryptedJsonData | Set-Content -Path $outputFilePath
