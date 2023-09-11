@@ -91,32 +91,33 @@ $fieldsToDecrypt = @("consumerKey", "consumerSecret")
 # Decryption key (use the same key you used for encryption)
 $keyHex = $env:key
 
-# Create a new AES object with the specified key and AES mode
-$AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider
-$AES.KeySize = 256  # Set the key size to 256 bits for AES-256
-$AES.Key = [System.Text.Encoding]::UTF8.GetBytes($keyHex.PadRight(32))
-$AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
-
 # Loop through the specified fields and decrypt their values
 foreach ($field in $fieldsToDecrypt) {
-    $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field.EncryptedValue
-    $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
+    # Check if 'credentials' and the specific field exist
+    if ($encryptedJsonData.credentials -ne $null -and $encryptedJsonData.credentials[0].$field -ne $null) {
+        $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field.EncryptedValue
+        $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
 
-    # Convert IV and encrypted value to bytes
-    $IV = [System.Convert]::FromBase64String($IVBase64)
-    $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
+        # Convert IV and encrypted value to bytes
+        $IV = [System.Convert]::FromBase64String($IVBase64)
+        $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
 
-    # Create a decryptor
-    $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
+        # Create a decryptor
+        $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
 
-    # Decrypt the data
-    $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
-    $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
+        # Decrypt the data
+        $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
+        $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
 
-    # Update the JSON object with the decrypted value
-    $encryptedJsonData.credentials[0].$field = $decryptedText
+        # Update the JSON object with the decrypted value
+        $encryptedJsonData.credentials[0].$field = $decryptedText
+    }
+    else {
+        Write-Host "Field '$field' not found or is null."
+    }
 }
 
 # Display the JSON object with decrypted values
 Write-Host $encryptedJsonData
+
 
