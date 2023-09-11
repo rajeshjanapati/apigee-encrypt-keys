@@ -79,55 +79,15 @@ foreach ($field in $fieldsToEncrypt) {
     }
 }
 
-# Convert the modified JSON data back to JSON format
-$encryptedJsonData = $appdetailget | ConvertTo-Json
+# Convert the modified JSON data back to JSON format with a higher depth value
+$encryptedJsonData = $appdetailget | ConvertTo-Json -Depth 10
 
 # Display the modified JSON data
 Write-Host $encryptedJsonData
 
 
 
-# Specify the fields you want to decrypt
-$fieldsToDecrypt = @("consumerKey", "consumerSecret")
 
-# Decryption key (use the same key you used for encryption)
-$keyHex = $env:key
-
-# Create a new AES object with the specified key and AES mode
-$AES = New-Object System.Security.Cryptography.AesCryptoServiceProvider
-$AES.KeySize = 256  # Set the key size to 256 bits for AES-256
-$AES.Key = [System.Text.Encoding]::UTF8.GetBytes($keyHex.PadRight(32))
-$AES.Mode = [System.Security.Cryptography.CipherMode]::CBC
-
-# Loop through the specified fields and decrypt their values
-foreach ($field in $fieldsToDecrypt) {
-    # Check if the field contains a valid Base64 string
-    if ($encryptedJsonData.credentials[0].$field -ne "System.Collections.Hashtable") {
-        $encryptedValueBase64 = $encryptedJsonData.credentials[0].$field.EncryptedValue
-        $IVBase64 = $encryptedJsonData.credentials[0].$field.IV
-
-        # Convert IV and encrypted value to bytes
-        $IV = [System.Convert]::FromBase64String($IVBase64)
-        $encryptedBytes = [System.Convert]::FromBase64String($encryptedValueBase64)
-
-        # Create a decryptor
-        $decryptor = $AES.CreateDecryptor($AES.Key, $IV)
-
-        # Decrypt the data
-        $decryptedBytes = $decryptor.TransformFinalBlock($encryptedBytes, 0, $encryptedBytes.Length)
-        $decryptedText = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
-
-        # Update the JSON object with the decrypted value
-        $encryptedJsonData.credentials[0].$field = @{
-            "EncryptedValue" = $encryptedValueBase64
-            "IV" = $IVBase64
-            "DecryptedValue" = $decryptedText
-        }
-    }
-}
-
-# Display the JSON object with both encrypted and decrypted values
-Write-Host $encryptedJsonData
 
 
 # To save the modified JSON data to a file, uncomment and customize the following line
